@@ -21,6 +21,7 @@
 
 #include "doc.h"
 #include "sheet.h"
+#include "style.h"
 
 struct {
 	bool initialised;
@@ -37,6 +38,11 @@ bool sd_init(const char *ua_stylesheet, bool path)
 		return false;
 	}
 
+	res = sd_style_init();
+	if (res != true) {
+		return false;
+	}
+
 	if (path) {
 		res = sd_sheet_load_file(ua_stylesheet,
 				"User Agent Stylesheet",
@@ -49,6 +55,7 @@ bool sd_init(const char *ua_stylesheet, bool path)
 	}
 
 	if (res != true) {
+		sd_style_fini();
 		return false;
 	}
 
@@ -111,7 +118,12 @@ bool sd_load_file(
 		return res;
 	}
 
+	res = sd_style_annotate(doc, sd_ctx.sheet_ua, sheet_user);
 	css_stylesheet_destroy(sheet_user);
+	if (res != true) {
+		dom_node_unref(doc);
+		return res;
+	}
 
 	*doc_out = doc;
 	return true;
@@ -142,6 +154,8 @@ void sd_fini(void)
 		css_stylesheet_destroy(sd_ctx.sheet_ua);
 		sd_ctx.sheet_ua = NULL;
 	}
+
+	sd_style_fini();
 
 	dom_namespace_finalise();
 	lwc_iterate_strings(sd__fini_lwc_callback, NULL);
