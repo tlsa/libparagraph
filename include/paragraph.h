@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: ISC
  *
- * Copyright (C) 2019 Michael Drake <tlsa@netsurf-browser.org>
+ * Copyright (C) 2019-2021 Michael Drake <tlsa@netsurf-browser.org>
  */
 
 /**
@@ -257,6 +257,14 @@ paragraph_err_t paragraph_layout_line(
                 paragraph_layout_text_fn text_fn,
                 paragraph_layout_replaced_fn replaced_fn,
                 uint32_t *line_height_out);
+
+/**
+ * Convert a paragraph error code to a string.
+ *
+ * \param[in]  err  Error code to convert to a string.
+ * \return Error string for error code value.
+ */
+const char *paragraph_strerror(paragraph_err_t err);
 
 #ifdef __cplusplus
 }
