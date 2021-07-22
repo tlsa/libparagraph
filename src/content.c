@@ -75,8 +75,7 @@ static paragraph_err_t paragraph__content_entry_get_new(
 paragraph_err_t paragraph_content_add_text(
 		paragraph_ctx_t *ctx,
 		const paragraph_string_t *text,
-		void *handle,
-		const paragraph_style_t *style)
+		void *handle)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
@@ -89,7 +88,7 @@ paragraph_err_t paragraph_content_add_text(
 	entry->type = PARAGRAPH_CONTENT_TEXT;
 	entry->data.text = text;
 	entry->handle = handle;
-	entry->style = style;
+	entry->style = NULL;
 
 	return PARAGRAPH_OK;
 }

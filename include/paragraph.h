@@ -107,7 +107,7 @@ paragraph_ctx_t *paragraph_ctx_destroy(
 /**
  * Add text to a layout context.
  *
- * Note that both `handle` and `style` must remain valid and unmodified until
+ * Note that `handle` must remain valid and unmodified until
  * the paragraph context is either reset or destroyed.
  *
  * The scale is not passed in here.  The client must know the scale to measure
@@ -116,14 +116,12 @@ paragraph_ctx_t *paragraph_ctx_destroy(
  * \param[in] ctx     The paragraph context to add text to.
  * \param[in] text    The text to add to the context.
  * \param[in] handle  The client handle for the text.  e.g. a layout node.
- * \param[in] style   The computed style that applies to the text.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_content_add_text(
 		paragraph_ctx_t *ctx,
 		const paragraph_string_t *text,
-		void *handle,
-		const paragraph_style_t *style);
+		void *handle);
 
 /**
  * Add replaced object to a layout context.
