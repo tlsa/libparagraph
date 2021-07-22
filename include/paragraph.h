@@ -105,6 +105,36 @@ paragraph_ctx_t *paragraph_ctx_destroy(
 		paragraph_ctx_t *ctx);
 
 /**
+ * Push an inline start to a layout context.
+ *
+ * Note that both `handle` and `style` must remain valid and unmodified until
+ * the paragraph context is either reset or destroyed.
+ *
+ * \param[in] ctx     The paragraph context to add style to.
+ * \param[in] handle  The client handle for the start.  e.g. a DOM node.
+ * \param[in] style   The new computed style.
+ * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ */
+paragraph_err_t paragraph_style_push(
+		paragraph_ctx_t *ctx,
+		void *handle,
+		const paragraph_style_t *style);
+
+/**
+ * Pop an inline style from a layout context.
+ *
+ * Note that both `handle` and `style` must remain valid and unmodified until
+ * the paragraph context is either reset or destroyed.
+ *
+ * \param[in] ctx     The paragraph context to add style to.
+ * \param[in] handle  The client handle for the start.  e.g. a DOM node.
+ * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ */
+paragraph_err_t paragraph_style_pop(
+		paragraph_ctx_t *ctx,
+		void *handle);
+
+/**
  * Add text to a layout context.
  *
  * Note that `handle` must remain valid and unmodified until
