@@ -220,20 +220,12 @@ static bool paragraph_sd_add_text(
 	dom_string *content;
 	paragraph_err_t err;
 	paragraph_ctx_t *para;
-	css_select_results *style;
 
 	assert(type == DOM_TEXT_NODE);
 
 	res = paragraph_sd_get_para(node, &para);
 	if (res != true) {
 		return res;
-	}
-
-	res = sd_style_get(node, type, &style);
-	if (res != true || style == NULL) {
-		fprintf(stderr, "%s: Failed to get text style\n",
-				__func__);
-		return false;
 	}
 
 	derr = dom_characterdata_get_data(node, &content);
@@ -246,7 +238,7 @@ static bool paragraph_sd_add_text(
 	/* TODO: pass ref in, and allow libparagraph to unref */
 	dom_string_unref(content);
 
-	err = paragraph_content_add_text(para, content, node, style);
+	err = paragraph_content_add_text(para, content, node);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to add text: %s\n",
 				__func__, paragraph_strerror(err));
