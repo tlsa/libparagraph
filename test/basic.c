@@ -248,6 +248,66 @@ static bool paragraph_sd_add_text(
 	return true;
 }
 
+static bool paragraph_sd_add_start(
+		dom_node_type type,
+		dom_node *node)
+{
+	bool res;
+	paragraph_err_t err;
+	paragraph_ctx_t *para;
+	css_select_results *style;
+
+	assert(type == DOM_ELEMENT_NODE);
+
+	res = sd_style_get(node, type, &style);
+	if (res != true || style == NULL) {
+		fprintf(stderr, "%s: Failed to get paragraph style\n",
+				__func__);
+		return false;
+	}
+
+	res = paragraph_sd_get_para(node, &para);
+	if (res != true) {
+		/* Assume this element isn't inside a <p>. */
+		return true;
+	}
+
+	err = paragraph_content_add_inline_start(para, node, style);
+	if (err != PARAGRAPH_OK) {
+		fprintf(stderr, "%s: Failed to add text: %s\n",
+				__func__, paragraph_strerror(err));
+		return false;
+	}
+
+	return true;
+}
+
+static bool paragraph_sd_add_end(
+		dom_node_type type,
+		dom_node *node)
+{
+	bool res;
+	paragraph_err_t err;
+	paragraph_ctx_t *para;
+
+	assert(type == DOM_ELEMENT_NODE);
+
+	res = paragraph_sd_get_para(node, &para);
+	if (res != true) {
+		/* Assume this element isn't inside a <p>. */
+		return true;
+	}
+
+	err = paragraph_content_add_inline_end(para, node);
+	if (err != PARAGRAPH_OK) {
+		fprintf(stderr, "%s: Failed to add text: %s\n",
+				__func__, paragraph_strerror(err));
+		return false;
+	}
+
+	return true;
+}
+
 static enum dom_walk_cmd paragraph_sd_cb(
 		enum dom_walk_stage stage,
 		dom_node_type type,
@@ -282,10 +342,21 @@ static enum dom_walk_cmd paragraph_sd_cb(
 					dom_string_unref(name);
 					return DOM_WALK_CMD_ABORT;
 				}
+			} else {
+				res = paragraph_sd_add_start(type, node);
+				if (res != true) {
+					dom_string_unref(name);
+					return DOM_WALK_CMD_ABORT;
+				}
 			}
 			break;
 
 		case DOM_WALK_STAGE_LEAVE:
+			res = paragraph_sd_add_end(type, node);
+			if (res != true) {
+				dom_string_unref(name);
+				return DOM_WALK_CMD_ABORT;
+			}
 			break;
 		}
 
