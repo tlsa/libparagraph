@@ -86,7 +86,7 @@ paragraph_err_t paragraph_ctx_create(
 		void *pw,
 		paragraph_ctx_t **ctx_out,
 		const paragraph_cb_text_t *cb_text,
-		const paragraph_style_t *container_style);
+		paragraph_style_t *container_style);
 
 /**
  * Destroy a paragraph context.
@@ -118,7 +118,7 @@ paragraph_ctx_t *paragraph_ctx_destroy(
 paragraph_err_t paragraph_content_add_inline_start(
 		paragraph_ctx_t *ctx,
 		void *handle,
-		const paragraph_style_t *style);
+		paragraph_style_t *style);
 
 /**
  * Pop an inline style from a layout context.
@@ -179,7 +179,7 @@ paragraph_err_t paragraph_content_add_replaced(
 		uint32_t px_width,
 		uint32_t px_height,
 		void *handle,
-		const paragraph_style_t *style);
+		paragraph_style_t *style);
 
 /**
  * Add floated object to a layout context.
@@ -198,7 +198,7 @@ paragraph_err_t paragraph_content_add_replaced(
 paragraph_err_t paragraph_content_add_float(
 		paragraph_ctx_t *ctx,
 		void *handle,
-		const paragraph_style_t *style);
+		paragraph_style_t *style);
 
 /**
  * Get the minimum and maximum widths of the paragraph context.

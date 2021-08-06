@@ -38,7 +38,7 @@ paragraph_err_t paragraph_ctx_create(
 		void *pw,
 		paragraph_ctx_t **ctx_out,
 		const paragraph_cb_text_t *cb_text,
-		const paragraph_style_t *container_style)
+		paragraph_style_t *container_style)
 {
 	paragraph_ctx_t *ctx;
 

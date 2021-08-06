@@ -99,7 +99,7 @@ paragraph_err_t paragraph_content_add_replaced(
 		uint32_t px_width,
 		uint32_t px_height,
 		void *handle,
-		const paragraph_style_t *style)
+		paragraph_style_t *style)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
@@ -122,7 +122,7 @@ paragraph_err_t paragraph_content_add_replaced(
 paragraph_err_t paragraph_content_add_float(
 		paragraph_ctx_t *ctx,
 		void *handle,
-		const paragraph_style_t *style)
+		paragraph_style_t *style)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;

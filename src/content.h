@@ -26,7 +26,7 @@ typedef struct paragraph_content_entry_s {
 		} replaced;
 	} data;
 	void *handle;
-	const paragraph_style_t *style;
+	paragraph_style_t *style;
 } paragraph_content_entry_t;
 
 typedef struct paragraph_content_s {
