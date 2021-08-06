@@ -14,6 +14,7 @@
 
 typedef struct paragraph_content_entry_s {
 	enum {
+		PARAGRAPH_CONTENT_NONE,
 		PARAGRAPH_CONTENT_TEXT,
 		PARAGRAPH_CONTENT_FLOAT,
 		PARAGRAPH_CONTENT_REPLACED,

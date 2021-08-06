@@ -66,6 +66,8 @@ static paragraph_err_t paragraph__content_entry_get_new(
 	}
 
 	*entry_out = content->entries + content->entries_used++;
+	(*entry_out)->type = PARAGRAPH_CONTENT_NONE;
+
 	return PARAGRAPH_OK;
 }
 
