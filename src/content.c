@@ -138,3 +138,50 @@ paragraph_err_t paragraph_content_add_float(
 
 	return PARAGRAPH_OK;
 }
+
+/* Exported function, documented in `include/paragraph.h` */
+paragraph_err_t paragraph_content_add_inline_start(
+		paragraph_ctx_t *ctx,
+		void *handle,
+		paragraph_style_t *style)
+{
+	paragraph_err_t err;
+	paragraph_content_entry_t *entry;
+
+	err = paragraph__content_entry_get_new(ctx, &entry);
+	if (err != PARAGRAPH_OK) {
+		return err;
+	}
+
+	entry->type = PARAGRAPH_CONTENT_INLINE_START;
+	entry->handle = handle;
+	entry->style = paragraph_style__ref(style);
+
+	return paragraph_style__push(&ctx->styles, style);
+}
+
+/* Exported function, documented in `include/paragraph.h` */
+paragraph_err_t paragraph_content_add_inline_end(
+		paragraph_ctx_t *ctx,
+		void *handle)
+{
+	paragraph_err_t err;
+	paragraph_style_t *style;
+	paragraph_content_entry_t *entry;
+
+	err = paragraph__content_entry_get_new(ctx, &entry);
+	if (err != PARAGRAPH_OK) {
+		return err;
+	}
+
+	err = paragraph_style__pop(&ctx->styles, &style);
+	if (err != PARAGRAPH_OK) {
+		return err;
+	}
+
+	entry->type = PARAGRAPH_CONTENT_INLINE_END;
+	entry->handle = handle;
+	entry->style = paragraph_style__ref(style);
+
+	return PARAGRAPH_OK;
+}

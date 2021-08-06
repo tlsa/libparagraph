@@ -18,6 +18,8 @@ typedef struct paragraph_content_entry_s {
 		PARAGRAPH_CONTENT_TEXT,
 		PARAGRAPH_CONTENT_FLOAT,
 		PARAGRAPH_CONTENT_REPLACED,
+		PARAGRAPH_CONTENT_INLINE_START,
+		PARAGRAPH_CONTENT_INLINE_END,
 	} type;
 	union {
 		const paragraph_string_t *text;
