@@ -61,9 +61,6 @@ static paragraph_err_t paragraph__content_entry_get_new(
 			return PARAGRAPH_ERR_OOM;
 		}
 
-		*entry_out = &entries[content->entries_used];
-
-		content->entries_used++;
 		content->entries = entries;
 		content->entries_alloc = entries_alloc;
 	}
