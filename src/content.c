@@ -14,6 +14,7 @@
 #include <paragraph.h>
 
 #include "content.h"
+#include "style.h"
 #include "ctx.h"
 
 /* Internally exported function, documented in `src/content.h` */
@@ -88,7 +89,7 @@ paragraph_err_t paragraph_content_add_text(
 	entry->type = PARAGRAPH_CONTENT_TEXT;
 	entry->data.text = text;
 	entry->handle = handle;
-	entry->style = NULL;
+	entry->style = paragraph_style__get_current(&ctx->styles);
 
 	return PARAGRAPH_OK;
 }
