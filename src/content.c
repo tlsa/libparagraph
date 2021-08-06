@@ -22,6 +22,10 @@ paragraph_err_t paragraph__content_destroy(
 		paragraph_content_t *content)
 {
 	/* TODO: Free anything we own in each entry. */
+	for (size_t i = 0; i < content->entries_used; i++) {
+		content->entries[i].style = paragraph_style__unref(
+				content->entries[i].style);
+	}
 
 	free(content->entries);
 	content->entries = NULL;
