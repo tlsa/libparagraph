@@ -115,7 +115,7 @@ paragraph_ctx_t *paragraph_ctx_destroy(
  * \param[in] style   The new computed style.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
-paragraph_err_t paragraph_style_push(
+paragraph_err_t paragraph_content_add_inline_start(
 		paragraph_ctx_t *ctx,
 		void *handle,
 		const paragraph_style_t *style);
@@ -130,7 +130,7 @@ paragraph_err_t paragraph_style_push(
  * \param[in] handle  The client handle for the start.  e.g. a DOM node.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
-paragraph_err_t paragraph_style_pop(
+paragraph_err_t paragraph_content_add_inline_end(
 		paragraph_ctx_t *ctx,
 		void *handle);
 
