@@ -6,7 +6,7 @@ export PKG_CONFIG_PATH:=${PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}::
 CC = gcc
 LD = gcc
 CFLAGS = \
-	--std=c99 -g -Wall -Wextra \
+	--std=c99 -g -Wall -Wextra -fanalyzer \
 	`pkg-config sdl2 --cflags` \
 	`pkg-config freetype2 --cflags` \
 	`pkg-config harfbuzz --cflags` \
