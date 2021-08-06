@@ -280,11 +280,11 @@ typedef paragraph_err_t (* const paragraph_layout_float_fn)(
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_layout_line(
-                paragraph_ctx_t *ctx,
-                uint32_t available_width,
-                paragraph_layout_text_fn text_fn,
-                paragraph_layout_replaced_fn replaced_fn,
-                uint32_t *line_height_out);
+		paragraph_ctx_t *ctx,
+		uint32_t available_width,
+		paragraph_layout_text_fn text_fn,
+		paragraph_layout_replaced_fn replaced_fn,
+		uint32_t *line_height_out);
 
 /**
  * Convert a paragraph error code to a string.
