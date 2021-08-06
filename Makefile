@@ -28,6 +28,7 @@ BUILDDIR=build/$(TARGET)
 SOURCES_PARAGRAPH = \
 	ctx.c \
 	util.c \
+	style.c \
 	content.c
 
 SRC_PARAGRAPH := $(addprefix src/,$(SOURCES_PARAGRAPH))
