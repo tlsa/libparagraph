@@ -9,8 +9,8 @@
  * \brief Paragraph content interface.
  */
 
-#ifndef PARAGRAPH__CTX_H
-#define PARAGRAPH__CTX_H
+#ifndef PARAGRAPH__PARA_H
+#define PARAGRAPH__PARA_H
 
 #include "content.h"
 #include "style.h"
