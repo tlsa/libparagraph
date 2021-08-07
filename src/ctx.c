@@ -35,7 +35,7 @@ static void paragraph__ctx_destroy_internals(
 }
 
 /* Exported function, documented in `include/paragraph.h` */
-paragraph_err_t paragraph_para_create(
+paragraph_err_t paragraph_create(
 		void *pw,
 		paragraph_para_t **para_out,
 		const paragraph_cb_text_t *cb_text,
@@ -59,7 +59,7 @@ paragraph_err_t paragraph_para_create(
 	paragraph_style__init(&para->styles);
 	err = paragraph_style__push(&para->styles, container_style);
 	if (err != PARAGRAPH_OK) {
-		paragraph_para_destroy(para);
+		paragraph_destroy(para);
 		return err;
 	}
 
@@ -68,7 +68,7 @@ paragraph_err_t paragraph_para_create(
 }
 
 /* Exported function, documented in `include/paragraph.h` */
-paragraph_para_t *paragraph_para_destroy(
+paragraph_para_t *paragraph_destroy(
 		paragraph_para_t *para)
 {
 	paragraph__ctx_destroy_internals(para);

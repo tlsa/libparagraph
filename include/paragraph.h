@@ -82,7 +82,7 @@ typedef struct paragraph_callbacks_s {
  *                              needed for properties like `text-justify`.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
-paragraph_err_t paragraph_para_create(
+paragraph_err_t paragraph_create(
 		void *pw,
 		paragraph_para_t **para_out,
 		const paragraph_cb_text_t *cb_text,
@@ -98,10 +98,10 @@ paragraph_err_t paragraph_para_create(
  * pointers to freed memory aren't left lying around:
  *
  * ```c
- * ctx = paragraph_para_destroy(ctx);
+ * ctx = paragraph_destroy(ctx);
  * ```
  */
-paragraph_para_t *paragraph_para_destroy(
+paragraph_para_t *paragraph_destroy(
 		paragraph_para_t *para);
 
 /**

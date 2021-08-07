@@ -137,7 +137,7 @@ static void paragraph_sd__dom_user_data_handler(dom_node_operation operation,
 	if (dom_string_isequal(paragraph_sd_g.str_key_paragraph, key)) {
 		/* TODO: Support other operations. */
 		assert(operation == DOM_NODE_DELETED);
-		paragraph_para_destroy(data);
+		paragraph_destroy(data);
 	}
 }
 
@@ -161,7 +161,7 @@ static bool paragraph_sd_create(
 		return false;
 	}
 
-	err = paragraph_para_create(NULL, &para, &cb_text, style);
+	err = paragraph_create(NULL, &para, &cb_text, style);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to create paragraph context: %s\n",
 				__func__, paragraph_strerror(err));
@@ -172,7 +172,7 @@ static bool paragraph_sd_create(
 			para, paragraph_sd__dom_user_data_handler,
 			(void *) &old_para);
 	if (derr != DOM_NO_ERR) {
-		para = paragraph_para_destroy(para);
+		para = paragraph_destroy(para);
 		return false;
 	}
 	assert(old_para == NULL);
