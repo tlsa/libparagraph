@@ -137,7 +137,7 @@ static void paragraph_sd__dom_user_data_handler(dom_node_operation operation,
 	if (dom_string_isequal(paragraph_sd_g.str_key_paragraph, key)) {
 		/* TODO: Support other operations. */
 		assert(operation == DOM_NODE_DELETED);
-		paragraph_ctx_destroy(data);
+		paragraph_para_destroy(data);
 	}
 }
 
@@ -149,7 +149,7 @@ static bool paragraph_sd_create(
 	void *old_para;
 	dom_exception derr;
 	paragraph_err_t err;
-	paragraph_ctx_t *para;
+	paragraph_para_t *para;
 	css_select_results *style;
 
 	assert(type == DOM_ELEMENT_NODE);
@@ -161,7 +161,7 @@ static bool paragraph_sd_create(
 		return false;
 	}
 
-	err = paragraph_ctx_create(NULL, &para, &cb_text, style);
+	err = paragraph_para_create(NULL, &para, &cb_text, style);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to create paragraph context: %s\n",
 				__func__, paragraph_strerror(err));
@@ -172,7 +172,7 @@ static bool paragraph_sd_create(
 			para, paragraph_sd__dom_user_data_handler,
 			(void *) &old_para);
 	if (derr != DOM_NO_ERR) {
-		para = paragraph_ctx_destroy(para);
+		para = paragraph_para_destroy(para);
 		return false;
 	}
 	assert(old_para == NULL);
@@ -182,9 +182,9 @@ static bool paragraph_sd_create(
 
 static bool paragraph_sd_get_para(
 		dom_node *node,
-		paragraph_ctx_t **para_out)
+		paragraph_para_t **para_out)
 {
-	paragraph_ctx_t *para = NULL;
+	paragraph_para_t *para = NULL;
 	dom_node *next;
 
 	next = dom_node_ref(node);
@@ -219,7 +219,7 @@ static bool paragraph_sd_add_text(
 	dom_exception derr;
 	dom_string *content;
 	paragraph_err_t err;
-	paragraph_ctx_t *para;
+	paragraph_para_t *para;
 
 	assert(type == DOM_TEXT_NODE);
 
@@ -254,7 +254,7 @@ static bool paragraph_sd_add_start(
 {
 	bool res;
 	paragraph_err_t err;
-	paragraph_ctx_t *para;
+	paragraph_para_t *para;
 	css_select_results *style;
 
 	assert(type == DOM_ELEMENT_NODE);
@@ -288,7 +288,7 @@ static bool paragraph_sd_add_end(
 {
 	bool res;
 	paragraph_err_t err;
-	paragraph_ctx_t *para;
+	paragraph_para_t *para;
 
 	assert(type == DOM_ELEMENT_NODE);
 

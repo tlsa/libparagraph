@@ -15,7 +15,7 @@
 #include "content.h"
 #include "style.h"
 
-struct paragraph_ctx_s {
+struct paragraph_para_s {
 	void *pw;
 	const paragraph_cb_text_t *cb_text;
 

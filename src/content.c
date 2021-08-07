@@ -38,19 +38,19 @@ paragraph_err_t paragraph__content_destroy(
 /**
  * Get a new empty content entry at the end of the content entries array.
  *
- * \param[in]  ctx          The paragraph context to get new content entry for.
+ * \param[in]  para         The paragraph context to get new content entry for.
  * \param[out] entries_out  Returns pointer to new content entry on success.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 static paragraph_err_t paragraph__content_entry_get_new(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		paragraph_content_entry_t **entry_out)
 {
 	uint32_t entries_alloc;
 	paragraph_content_t *content;
 	paragraph_content_entry_t *entries;
 
-	content = &ctx->content;
+	content = &para->content;
 
 	if (content->entries_alloc <= content->entries_used) {
 		if (content->entries_alloc == 0) {
@@ -77,14 +77,14 @@ static paragraph_err_t paragraph__content_entry_get_new(
 
 /* Exported function, documented in `include/paragraph.h` */
 paragraph_err_t paragraph_content_add_text(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		const paragraph_string_t *text,
 		void *handle)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
 
-	err = paragraph__content_entry_get_new(ctx, &entry);
+	err = paragraph__content_entry_get_new(para, &entry);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}
@@ -92,14 +92,14 @@ paragraph_err_t paragraph_content_add_text(
 	entry->type = PARAGRAPH_CONTENT_TEXT;
 	entry->data.text = text;
 	entry->handle = handle;
-	entry->style = paragraph_style__get_current(&ctx->styles);
+	entry->style = paragraph_style__get_current(&para->styles);
 
 	return PARAGRAPH_OK;
 }
 
 /* Exported function, documented in `include/paragraph.h` */
 paragraph_err_t paragraph_content_add_replaced(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		uint32_t px_width,
 		uint32_t px_height,
 		void *handle,
@@ -108,7 +108,7 @@ paragraph_err_t paragraph_content_add_replaced(
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
 
-	err = paragraph__content_entry_get_new(ctx, &entry);
+	err = paragraph__content_entry_get_new(para, &entry);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}
@@ -124,14 +124,14 @@ paragraph_err_t paragraph_content_add_replaced(
 
 /* Exported function, documented in `include/paragraph.h` */
 paragraph_err_t paragraph_content_add_float(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		void *handle,
 		paragraph_style_t *style)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
 
-	err = paragraph__content_entry_get_new(ctx, &entry);
+	err = paragraph__content_entry_get_new(para, &entry);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}
@@ -145,14 +145,14 @@ paragraph_err_t paragraph_content_add_float(
 
 /* Exported function, documented in `include/paragraph.h` */
 paragraph_err_t paragraph_content_add_inline_start(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		void *handle,
 		paragraph_style_t *style)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
 
-	err = paragraph__content_entry_get_new(ctx, &entry);
+	err = paragraph__content_entry_get_new(para, &entry);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}
@@ -161,24 +161,24 @@ paragraph_err_t paragraph_content_add_inline_start(
 	entry->handle = handle;
 	entry->style = paragraph_style__ref(style);
 
-	return paragraph_style__push(&ctx->styles, style);
+	return paragraph_style__push(&para->styles, style);
 }
 
 /* Exported function, documented in `include/paragraph.h` */
 paragraph_err_t paragraph_content_add_inline_end(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		void *handle)
 {
 	paragraph_err_t err;
 	paragraph_style_t *style;
 	paragraph_content_entry_t *entry;
 
-	err = paragraph__content_entry_get_new(ctx, &entry);
+	err = paragraph__content_entry_get_new(para, &entry);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}
 
-	err = paragraph_style__pop(&ctx->styles, &style);
+	err = paragraph_style__pop(&para->styles, &style);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}

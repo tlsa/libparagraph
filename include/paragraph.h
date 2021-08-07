@@ -25,7 +25,7 @@ extern "C"
 /** Type for fixed point numbers */
 typedef int32_t paragraph_fixed_t;
 
-typedef struct paragraph_ctx_s paragraph_ctx_t;
+typedef struct paragraph_para_s paragraph_para_t;
 
 /**
  * LibParagraph return codes.
@@ -73,88 +73,88 @@ typedef struct paragraph_callbacks_s {
 } paragraph_cb_text_t;
 
 /**
- * Create a paragraph context.
+ * Create a paragraph.
  *
  * \param[in]  pw               Client's private data.
- * \param[out] ctx_out          Returns the newly created context on success.
+ * \param[out] para_out         Returns the newly created paragraph on success.
  * \param[in]  cb_text          Client callback table.
  * \param[in]  container_style  The style of the paragraph container.  This is
  *                              needed for properties like `text-justify`.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
-paragraph_err_t paragraph_ctx_create(
+paragraph_err_t paragraph_para_create(
 		void *pw,
-		paragraph_ctx_t **ctx_out,
+		paragraph_para_t **para_out,
 		const paragraph_cb_text_t *cb_text,
 		paragraph_style_t *container_style);
 
 /**
- * Destroy a paragraph context.
+ * Destroy a paragraph.
  *
- * This frees any memory and resources owned by the context, frees the
- * context itself, and returns NULL.
+ * This frees any memory and resources owned by the paragraph, frees the
+ * paragraph itself, and returns NULL.
  *
- * Assign the returned NULL to the context pointer being freed, so that wild
+ * Assign the returned NULL to the paragraph pointer being freed, so that wild
  * pointers to freed memory aren't left lying around:
  *
  * ```c
- * ctx = paragraph_ctx_destroy(ctx);
+ * ctx = paragraph_para_destroy(ctx);
  * ```
  */
-paragraph_ctx_t *paragraph_ctx_destroy(
-		paragraph_ctx_t *ctx);
+paragraph_para_t *paragraph_para_destroy(
+		paragraph_para_t *para);
 
 /**
- * Push an inline start to a layout context.
+ * Push an inline start to a paragraph.
  *
  * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph context is either reset or destroyed.
+ * the paragraph is either reset or destroyed.
  *
- * \param[in] ctx     The paragraph context to add style to.
+ * \param[in] ctx     The paragraph to add style to.
  * \param[in] handle  The client handle for the start.  e.g. a DOM node.
  * \param[in] style   The new computed style.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_content_add_inline_start(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		void *handle,
 		paragraph_style_t *style);
 
 /**
- * Pop an inline style from a layout context.
+ * Pop an inline style from a paragraph.
  *
  * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph context is either reset or destroyed.
+ * the paragraph is either reset or destroyed.
  *
- * \param[in] ctx     The paragraph context to add style to.
+ * \param[in] ctx     The paragraph to add style to.
  * \param[in] handle  The client handle for the start.  e.g. a DOM node.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_content_add_inline_end(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		void *handle);
 
 /**
- * Add text to a layout context.
+ * Add text to a paragraph.
  *
  * Note that `handle` must remain valid and unmodified until
- * the paragraph context is either reset or destroyed.
+ * the paragraph is either reset or destroyed.
  *
  * The scale is not passed in here.  The client must know the scale to measure
  * text with by storing it in its `pw`.
  *
- * \param[in] ctx     The paragraph context to add text to.
- * \param[in] text    The text to add to the context.
+ * \param[in] ctx     The paragraph to add text to.
+ * \param[in] text    The text to add to the paragraph.
  * \param[in] handle  The client handle for the text.  e.g. a layout node.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_content_add_text(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		const paragraph_string_t *text,
 		void *handle);
 
 /**
- * Add replaced object to a layout context.
+ * Add replaced object to a paragraph.
  *
  * This is an object that has pre-determined dimensions, for example:
  *
@@ -163,11 +163,11 @@ paragraph_err_t paragraph_content_add_text(
  * * an inline-block
  *
  * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph context is either reset or destroyed.
+ * the paragraph is either reset or destroyed.
  *
  * Note that the width and height are passed **pre-scaled**.
  *
- * \param[in] ctx     The paragraph context to add replaced object to.
+ * \param[in] ctx     The paragraph to add replaced object to.
  * \param[in] width   The width of the replaced content.
  * \param[in] height  The height of the replaced content.
  * \param[in] handle  The client handle for replaced element.  e.g. layout node.
@@ -175,41 +175,41 @@ paragraph_err_t paragraph_content_add_text(
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_content_add_replaced(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		uint32_t px_width,
 		uint32_t px_height,
 		void *handle,
 		paragraph_style_t *style);
 
 /**
- * Add floated object to a layout context.
+ * Add floated object to a paragraph.
  *
  * This is an object that has the `float` property set to either `left` or
  * `right`.
  *
  * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph context is either reset or destroyed.
+ * the paragraph is either reset or destroyed.
  *
- * \param[in] ctx     The paragraph context to add replaced object to.
+ * \param[in] ctx     The paragraph to add replaced object to.
  * \param[in] handle  The client handle for the text.  e.g. a layout node.
  * \param[in] style   The computed style that applies to the text.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_content_add_float(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		void *handle,
 		paragraph_style_t *style);
 
 /**
- * Get the minimum and maximum widths of the paragraph context.
+ * Get the minimum and maximum widths of the paragraph.
  *
- * \param[in]  ctx     The paragraph context to get min / max widths from.
+ * \param[in]  ctx     The paragraph to get min / max widths from.
  * \param[out] min     Pointer to place to store minimum width, or NULL.
  * \param[out] max     Pointer to place to store maximum width, or NULL.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_get_min_max_width(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		uint32_t *min,
 		uint32_t *max);
 
@@ -259,20 +259,20 @@ typedef paragraph_err_t (* const paragraph_layout_float_fn)(
 		uint32_t *available_width);
 
 /**
- * Perform layout of a line from the paragraph context.
+ * Perform layout of a line from the paragraph.
  *
- * Once all the content has been added to the paragraph context, this is
- * called.  One call will lay out a single line from the context.  If there
+ * Once all the content has been added to the paragraph, this is
+ * called.  One call will lay out a single line from the paragraph.  If there
  * is more content remaining that could not fit the line, then \ret
  * PARAGRAPH_END_OF_LINE will be returned.  Calling this function again
- * on the same paragraph context will lay out the next line.  Once all
+ * on the same paragraph will lay out the next line.  Once all
  * the content has undergone layout, \ref PARAGRAPH_OK will be returned.
  *
  * If some content on this line is to be floated, callbacks for that content
  * will emerge first.  Once all the floated content from the line has been
  * handled, callbacks for the in-flow content will emerge.
  *
- * \param[in]  ctx              The paragraph context to lay out.
+ * \param[in]  para             The paragraph to lay out.
  * \param[in]  available_width  The containing block width in physical pixels.
  * \param[in]  text_fn          Callback for providing layout info for text.
  * \param[in]  replaced_fn      Callback for providing layout info for replaced.
@@ -280,7 +280,7 @@ typedef paragraph_err_t (* const paragraph_layout_float_fn)(
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_layout_line(
-		paragraph_ctx_t *ctx,
+		paragraph_para_t *para,
 		uint32_t available_width,
 		paragraph_layout_text_fn text_fn,
 		paragraph_layout_replaced_fn replaced_fn,
