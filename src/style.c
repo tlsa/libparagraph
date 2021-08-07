@@ -13,7 +13,6 @@
 
 #include <paragraph.h>
 
-#include "ctx.h"
 #include "vec.h"
 #include "style.h"
 
