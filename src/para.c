@@ -15,7 +15,7 @@
 
 #include "content.h"
 #include "style.h"
-#include "ctx.h"
+#include "para.h"
 
 /**
  * Destroy the contents of a paragraph context.

@@ -15,7 +15,7 @@
 
 #include "content.h"
 #include "style.h"
-#include "ctx.h"
+#include "para.h"
 
 /* Internally exported function, documented in `src/content.h` */
 paragraph_err_t paragraph__content_destroy(
