@@ -17,6 +17,7 @@
 #ifndef PARAGRAPH__VEC_H
 #define PARAGRAPH__VEC_H
 
+#include <assert.h>
 #include <string.h>
 
 typedef struct {
