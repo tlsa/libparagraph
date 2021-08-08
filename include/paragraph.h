@@ -25,6 +25,8 @@ extern "C"
 /** Type for fixed point numbers */
 typedef int32_t paragraph_fixed_t;
 
+typedef struct paragraph_ctx_s paragraph_ctx_t;
+
 typedef struct paragraph_para_s paragraph_para_t;
 
 /**
@@ -71,6 +73,39 @@ typedef struct paragraph_callbacks_s {
 			const char **data_out,
 			char *len_out);
 } paragraph_cb_text_t;
+
+/**
+ * Initialise the library and create a context.
+ *
+ * The returned context pointer is used when creating paragraphs.
+ * It is destroyed with \ref paragraph_ctx_destroy and it must not be
+ * destroyed before all the paragraphs created with it have been destroyed.
+ *
+ * \param[in]  pw       Client's private data.
+ * \param[out] ctx_out  Returns the newly created library context on success.
+ * \param[in]  cb_text  Client callback table.
+ * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ */
+paragraph_err_t paragraph_ctx_create(
+		void *pw,
+		paragraph_ctx_t **ctx_out,
+		const paragraph_cb_text_t *cb_text);
+
+/**
+ * Destroy a library context.
+ *
+ * This frees any memory and resources owned by the library context, frees the
+ * context itself, and returns NULL.
+ *
+ * Assign the returned NULL to the paragraph pointer being freed, so that wild
+ * pointers to freed memory aren't left lying around:
+ *
+ * ```c
+ * ctx = paragraph_ctx_destroy(ctx);
+ * ```
+ */
+paragraph_ctx_t *paragraph_ctx_destroy(
+		paragraph_ctx_t *ctx);
 
 /**
  * Create a paragraph.
