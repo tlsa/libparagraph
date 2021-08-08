@@ -26,6 +26,7 @@ TARGET=test
 BUILDDIR=build/$(TARGET)
 
 SOURCES_PARAGRAPH = \
+	ctx.c \
 	para.c \
 	util.c \
 	style.c \
