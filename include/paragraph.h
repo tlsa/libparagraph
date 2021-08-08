@@ -98,7 +98,7 @@ paragraph_err_t paragraph_create(
  * pointers to freed memory aren't left lying around:
  *
  * ```c
- * ctx = paragraph_destroy(ctx);
+ * para = paragraph_destroy(para);
  * ```
  */
 paragraph_para_t *paragraph_destroy(
