@@ -142,6 +142,7 @@ static void paragraph_sd__dom_user_data_handler(dom_node_operation operation,
 }
 
 static bool paragraph_sd_create(
+		paragraph_ctx_t *ctx,
 		dom_node_type type,
 		dom_node *node)
 {
@@ -161,7 +162,7 @@ static bool paragraph_sd_create(
 		return false;
 	}
 
-	err = paragraph_create(NULL, &para, &cb_text, style);
+	err = paragraph_create(NULL, ctx, &para, style);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to create paragraph context: %s\n",
 				__func__, paragraph_strerror(err));
@@ -314,11 +315,10 @@ static enum dom_walk_cmd paragraph_sd_cb(
 		dom_node *node,
 		void *pw)
 {
+	paragraph_ctx_t *ctx = pw;
 	dom_exception derr;
 	dom_string *name;
 	bool res;
-
-	UNUSED(pw);
 
 	switch (type) {
 	case DOM_ELEMENT_NODE:
@@ -337,7 +337,7 @@ static enum dom_walk_cmd paragraph_sd_cb(
 
 			if (dom_string_caseless_isequal(name,
 					paragraph_sd_g.str_p)) {
-				res = paragraph_sd_create(type, node);
+				res = paragraph_sd_create(ctx, type, node);
 				if (res != true) {
 					dom_string_unref(name);
 					return DOM_WALK_CMD_ABORT;
@@ -380,6 +380,7 @@ static enum dom_walk_cmd paragraph_sd_cb(
 }
 
 static bool paragraph_sd(
+		paragraph_ctx_t *ctx,
 		dom_document *doc)
 {
 	dom_exception derr;
@@ -394,7 +395,7 @@ static bool paragraph_sd(
 	derr = libdom_treewalk(
 			DOM_WALK_ENABLE_ALL,
 			paragraph_sd_cb,
-			root, NULL);
+			root, ctx);
 	dom_node_unref(root);
 	if (derr != DOM_NO_ERR) {
 		fprintf(stderr, "%s: Failed to walk DOM\n", __func__);
@@ -405,6 +406,7 @@ static bool paragraph_sd(
 }
 
 static bool run_test(
+		paragraph_ctx_t *ctx,
 		const char *css,
 		const char *html)
 {
@@ -422,7 +424,7 @@ static bool run_test(
 		return res;
 	}
 
-	res = paragraph_sd(doc);
+	res = paragraph_sd(ctx, doc);
 	sd_free(doc);
 	if (res == false) {
 		paragraph_sd_ctx_fini();
@@ -435,6 +437,7 @@ static bool run_test(
 
 static bool example_latin(void)
 {
+	bool res;
 	const char *html =
 			"<html>\n"
 			"  <head><title>Title</title></head>\n"
@@ -444,8 +447,20 @@ static bool example_latin(void)
 			"</html>\n";
 	const char *css =
 			"p > em {font_size: 200%;}\n";
+	paragraph_ctx_t *ctx;
+	paragraph_err_t err;
 
-	return run_test(css, html);
+	err = paragraph_ctx_create(NULL, &ctx, &cb_text);
+	if (err != PARAGRAPH_OK) {
+		fprintf(stderr, "Failed to create paragraph context: %s\n",
+				paragraph_strerror(err));
+		return false;
+	}
+
+	res = run_test(ctx, css, html);
+	ctx = paragraph_ctx_destroy(ctx);
+
+	return res;
 }
 
 int main(int argc, char *argv[])

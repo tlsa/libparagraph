@@ -111,16 +111,16 @@ paragraph_ctx_t *paragraph_ctx_destroy(
  * Create a paragraph.
  *
  * \param[in]  pw               Client's private data.
+ * \param[in]  ctx              Library context.
  * \param[out] para_out         Returns the newly created paragraph on success.
- * \param[in]  cb_text          Client callback table.
  * \param[in]  container_style  The style of the paragraph container.  This is
  *                              needed for properties like `text-justify`.
  * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
  */
 paragraph_err_t paragraph_create(
 		void *pw,
+		paragraph_ctx_t *ctx,
 		paragraph_para_t **para_out,
-		const paragraph_cb_text_t *cb_text,
 		paragraph_style_t *container_style);
 
 /**

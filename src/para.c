@@ -31,20 +31,20 @@ static void paragraph__ctx_destroy_internals(
 
 	/* Invalidate the pointers to the things we don't own. */
 	para->pw = NULL;
-	para->cb_text = NULL;
+	para->ctx = NULL;
 }
 
 /* Exported function, documented in `include/paragraph.h` */
 paragraph_err_t paragraph_create(
 		void *pw,
+		paragraph_ctx_t *ctx,
 		paragraph_para_t **para_out,
-		const paragraph_cb_text_t *cb_text,
 		paragraph_style_t *container_style)
 {
 	paragraph_para_t *para;
 	paragraph_err_t err;
 
-	if (para_out == NULL || cb_text == NULL || container_style == NULL) {
+	if (para_out == NULL || ctx == NULL || container_style == NULL) {
 		return PARAGRAPH_ERR_BAD_PARAM;
 	}
 
@@ -54,7 +54,7 @@ paragraph_err_t paragraph_create(
 	}
 
 	para->pw = pw;
-	para->cb_text = cb_text;
+	para->ctx = ctx;
 
 	paragraph_style__init(&para->styles);
 	err = paragraph_style__push(&para->styles, container_style);

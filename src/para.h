@@ -17,7 +17,7 @@
 
 struct paragraph_para_s {
 	void *pw;
-	const paragraph_cb_text_t *cb_text;
+	paragraph_ctx_t *ctx;
 
 	paragraph_styles_t styles;
 	paragraph_content_t content;
