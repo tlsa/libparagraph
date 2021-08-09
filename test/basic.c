@@ -448,7 +448,7 @@ static bool example_latin(void)
 	const char *css =
 			"p > em {font_size: 200%;}\n";
 	paragraph_config_t para_config = {
-		.log_fn = NULL,
+		.log_fn = paragraph_log,
 	};
 	paragraph_ctx_t *ctx;
 	paragraph_err_t err;
