@@ -445,7 +445,7 @@ static bool example_latin(void)
 			"<html>\n"
 			"  <head><title>Title</title></head>\n"
 			"  <body>\n"
-			"    <p>This is a <em>simple</em> test!\n"
+			"    <p>This is a <em>simple</em> test!</p>\n"
 			"  </body>\n"
 			"</html>\n";
 	const char *css =
