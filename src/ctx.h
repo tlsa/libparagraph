@@ -14,6 +14,7 @@
 
 struct paragraph_ctx_s {
 	void *pw;
+	const paragraph_config_t *config;
 	const paragraph_cb_text_t *cb_text;
 };
 

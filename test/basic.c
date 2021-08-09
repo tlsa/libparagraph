@@ -447,10 +447,13 @@ static bool example_latin(void)
 			"</html>\n";
 	const char *css =
 			"p > em {font_size: 200%;}\n";
+	paragraph_config_t para_config = {
+		.log_fn = NULL,
+	};
 	paragraph_ctx_t *ctx;
 	paragraph_err_t err;
 
-	err = paragraph_ctx_create(NULL, &ctx, &cb_text);
+	err = paragraph_ctx_create(NULL, &ctx, &para_config, &cb_text);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "Failed to create paragraph context: %s\n",
 				paragraph_strerror(err));

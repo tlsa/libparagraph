@@ -143,6 +143,7 @@ typedef struct paragraph_callbacks_s {
 paragraph_err_t paragraph_ctx_create(
 		void *pw,
 		paragraph_ctx_t **ctx_out,
+		const paragraph_config_t *config,
 		const paragraph_cb_text_t *cb_text);
 
 /**

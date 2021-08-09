@@ -19,6 +19,7 @@
 paragraph_err_t paragraph_ctx_create(
 		void *pw,
 		paragraph_ctx_t **ctx_out,
+		const paragraph_config_t *config,
 		const paragraph_cb_text_t *cb_text)
 {
 	paragraph_ctx_t *ctx;
@@ -33,6 +34,7 @@ paragraph_err_t paragraph_ctx_create(
 	}
 
 	ctx->pw = pw;
+	ctx->config = config;
 	ctx->cb_text = cb_text;
 
 	*ctx_out = ctx;
