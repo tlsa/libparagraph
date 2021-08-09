@@ -92,6 +92,9 @@ extern void paragraph_log(
 		const char *fmt,
 		va_list args);
 
+/**
+ * Client Paragraph context configuration data.
+ */
 typedef struct paragraph_config {
 	/**
 	 * Client function to use for logging.
