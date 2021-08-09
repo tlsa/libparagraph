@@ -67,6 +67,31 @@ typedef void (*paragraph_log_fn_t)(
 		const char *fmt,
 		va_list args);
 
+/**
+ * Standard Paragraph logging function.
+ *
+ * This logs to `stderr`.  It clients want to log elsewhere they must
+ * implement their own logging function, and pass it to PARAGRAPH in the
+ * \ref paragraph_config_t structure.
+ *
+ * \note This default logging function composes single log messages from
+ *       multiple separate fprintfs to `stderr`.  If the client application
+ *       writes to `stderr` from multiple threads, individual \ref paragraph_log
+ *       messages may get broken up by the client applications logging.  To
+ *       avoid this, clients should implement their own \ref paragraph_log_fn_t
+ *       and pass it in via \ref paragraph_config_t.
+ *
+ * \param[in] level  Log level of message to log.
+ * \param[in] ctx    Logging context, unused.
+ * \param[in] fmt    Format string for message to log.
+ * \param[in] args   Additional arguments used by fmt.
+ */
+extern void paragraph_log(
+		paragraph_log_t level,
+		void *ctx,
+		const char *fmt,
+		va_list args);
+
 typedef struct paragraph_config {
 	/**
 	 * Client function to use for logging.
