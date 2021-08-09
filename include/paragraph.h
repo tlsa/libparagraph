@@ -17,6 +17,7 @@ extern "C"
 {
 #endif
 
+#include <stdarg.h>
 #include <stdint.h>
 
 /** 22:10 fixed point math */
@@ -40,7 +41,60 @@ typedef enum paragraph_err {
 	PARAGRAPH_ERR_UNKNOWN,   /* TODO: Replace with proper errors. */
 } paragraph_err_t;
 
+/** Paragraph logging levels. */
+typedef enum paragraph_log_e {
+	PARAGRAPH_LOG_DEBUG,   /**< Debug level logging. */
+	PARAGRAPH_LOG_INFO,    /**< Info level logging. */
+	PARAGRAPH_LOG_NOTICE,  /**< Notice level logging. */
+	PARAGRAPH_LOG_WARNING, /**< Warning level logging. */
+	PARAGRAPH_LOG_ERROR,   /**< Error level logging. */
+} paragraph_log_t;
 
+/**
+ * Paragraph logging function prototype.
+ *
+ * Clients may implement this to manage logging from Paragraph themselves.
+ * Otherwise, consider using the standard logging function, \ref paragraph_log.
+ *
+ * \param[in] level  Log level of message to log.
+ * \param[in] ctx    Client's private logging context.
+ * \param[in] fmt    Format string for message to log.
+ * \param[in] args   Additional arguments used by fmt.
+ */
+typedef void (*paragraph_log_fn_t)(
+		paragraph_log_t level,
+		void *ctx,
+		const char *fmt,
+		va_list args);
+
+typedef struct paragraph_config {
+	/**
+	 * Client function to use for logging.
+	 *
+	 * Clients can implement their own logging function and set it here.
+	 * Otherwise, set `log_fn` to \ref paragraph_log if default
+	 * logging to `stderr` is suitable (see its documentation for more
+	 * details), or set to `NULL` to suppress all logging.
+	 */
+	paragraph_log_fn_t log_fn;
+	/**
+	 * Client logging function context pointer.
+	 *
+	 * Clients using their own custom logging function can pass their
+	 * context here, which will be passed through to their log_fn.
+	 *
+	 * The default logging function, \ref paragraph_log doesn't require a
+	 * logging context, so pass NULL for the log_ctx if using that.
+	 */
+	void *log_ctx;
+	/**
+	 * Minimum logging priority level to be issued.
+	 *
+	 * Specifying e.g. \ref PARAGRAPH_LOG_WARNING will cause only warnings
+	 * and errors to emerge.
+	 */
+	paragraph_log_t log_level;
+} paragraph_config_t;
 
 typedef void paragraph_style_t;
 typedef void paragraph_string_t;
