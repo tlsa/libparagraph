@@ -352,10 +352,13 @@ static enum dom_walk_cmd paragraph_sd_cb(
 			break;
 
 		case DOM_WALK_STAGE_LEAVE:
-			res = paragraph_sd_add_end(type, node);
-			if (res != true) {
-				dom_string_unref(name);
-				return DOM_WALK_CMD_ABORT;
+			if (dom_string_caseless_isequal(name,
+					paragraph_sd_g.str_p) == false) {
+				res = paragraph_sd_add_end(type, node);
+				if (res != true) {
+					dom_string_unref(name);
+					return DOM_WALK_CMD_ABORT;
+				}
 			}
 			break;
 		}
