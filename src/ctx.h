@@ -6,7 +6,7 @@
 
 /**
  * \file
- * \brief Paragraph content interface.
+ * \brief Paragraph context interface.
  */
 
 #ifndef PARAGRAPH__CTX_H
