@@ -110,6 +110,9 @@ paragraph_err_t paragraph_content_add_text(
 			handle, entry->data.text.len,
 			(int)entry->data.text.len,
 			entry->data.text.data);
+
+	para->content.len += entry->data.text.len;
+
 	return PARAGRAPH_OK;
 }
 

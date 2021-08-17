@@ -40,6 +40,8 @@ typedef struct paragraph_content_s {
 	paragraph_content_entry_t *entries;
 	uint32_t entries_alloc;
 	uint32_t entries_used;
+
+	size_t len; /**< Total byte-length of text. */
 } paragraph_content_t;
 
 /**
