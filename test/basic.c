@@ -49,7 +49,7 @@ paragraph_err_t bitmap_font_measure_text(
 	return PARAGRAPH_OK;
 }
 
-paragraph_err_t simple_string_text_get(
+paragraph_err_t basic_dom_string_text_get(
 		void *pw,
 		const paragraph_string_t *text,
 		const char **data_out,
@@ -61,15 +61,15 @@ paragraph_err_t simple_string_text_get(
 		return PARAGRAPH_ERR_BAD_PARAM;
 	}
 
-	*data_out = text;
-	*len_out = strlen(text);
+	*data_out = dom_string_data(text);
+	*len_out = dom_string_byte_length(text);
 
 	return PARAGRAPH_OK;
 }
 
 paragraph_cb_text_t cb_text = {
 	.measure_text = bitmap_font_measure_text,
-	.text_get     = simple_string_text_get,
+	.text_get     = basic_dom_string_text_get,
 };
 
 static void paragraph_sd_ctx_fini(void)
