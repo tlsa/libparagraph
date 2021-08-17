@@ -95,9 +95,13 @@ paragraph_err_t paragraph_content_add_text(
 	}
 
 	entry->type = PARAGRAPH_CONTENT_TEXT;
-	entry->data.text = text;
+	entry->data.text.string = text;
 	entry->handle = handle;
 	entry->style = paragraph_style__get_current(&para->styles);
+
+	para->ctx->cb_text->text_get(para->ctx->pw, text,
+			&entry->data.text.data,
+			&entry->data.text.len);
 
 	return PARAGRAPH_OK;
 }

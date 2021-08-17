@@ -22,7 +22,11 @@ typedef struct paragraph_content_entry_s {
 		PARAGRAPH_CONTENT_INLINE_END,
 	} type;
 	union {
-		const paragraph_string_t *text;
+		struct {
+			const paragraph_string_t *string;
+			const char *data;
+			size_t len;
+		} text;
 		struct {
 			uint32_t px_width;
 			uint32_t px_height;
