@@ -53,7 +53,7 @@ paragraph_err_t simple_string_text_get(
 		void *pw,
 		const paragraph_string_t *text,
 		const char **data_out,
-		char *len_out)
+		size_t *len_out)
 {
 	UNUSED(pw);
 
