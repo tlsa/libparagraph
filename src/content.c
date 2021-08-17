@@ -16,6 +16,8 @@
 #include "content.h"
 #include "style.h"
 #include "para.h"
+#include "ctx.h"
+#include "log.h"
 
 static void paragraph__content_entry_cleanup(
 		paragraph_content_entry_t *content_entry)
@@ -103,6 +105,11 @@ paragraph_err_t paragraph_content_add_text(
 			&entry->data.text.data,
 			&entry->data.text.len);
 
+	paragraph__log(para->ctx->config, LOG_INFO,
+			"%p: Add text (%zu): \"%.*s\"",
+			handle, entry->data.text.len,
+			(int)entry->data.text.len,
+			entry->data.text.data);
 	return PARAGRAPH_OK;
 }
 
@@ -170,6 +177,7 @@ paragraph_err_t paragraph_content_add_inline_start(
 	entry->handle = handle;
 	entry->style = paragraph_style__ref(style);
 
+	paragraph__log(para->ctx->config, LOG_INFO, "%p: Add inline start!", handle);
 	return paragraph_style__push(&para->styles, style);
 }
 
@@ -196,5 +204,6 @@ paragraph_err_t paragraph_content_add_inline_end(
 	entry->handle = handle;
 	entry->style = paragraph_style__ref(style);
 
+	paragraph__log(para->ctx->config, LOG_INFO, "%p: Add inline end!", handle);
 	return PARAGRAPH_OK;
 }
