@@ -153,7 +153,7 @@ typedef struct paragraph_callbacks_s {
 			void *pw,
 			const paragraph_string_t *text,
 			const char **data_out,
-			char *len_out);
+			size_t *len_out);
 } paragraph_cb_text_t;
 
 /**
