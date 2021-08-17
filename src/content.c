@@ -17,14 +17,19 @@
 #include "style.h"
 #include "para.h"
 
+static void paragraph__content_entry_cleanup(
+		paragraph_content_entry_t *content_entry)
+{
+	content_entry->style = paragraph_style__unref(content_entry->style);
+}
+
 /* Internally exported function, documented in `src/content.h` */
 paragraph_err_t paragraph__content_destroy(
 		paragraph_content_t *content)
 {
 	/* TODO: Free anything we own in each entry. */
 	for (size_t i = 0; i < content->entries_used; i++) {
-		content->entries[i].style = paragraph_style__unref(
-				content->entries[i].style);
+		paragraph__content_entry_cleanup(&content->entries[i]);
 	}
 
 	free(content->entries);
