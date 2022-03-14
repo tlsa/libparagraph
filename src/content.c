@@ -97,21 +97,21 @@ paragraph_err_t paragraph_content_add_text(
 	}
 
 	entry->type = PARAGRAPH_CONTENT_TEXT;
-	entry->data.text.string = text;
+	entry->text.string = text;
 	entry->handle = handle;
 	entry->style = paragraph_style__get_current(&para->styles);
 
 	para->ctx->cb_text->text_get(para->ctx->pw, text,
-			&entry->data.text.data,
-			&entry->data.text.len);
+			&entry->text.data,
+			&entry->text.len);
 
 	paragraph__log(para->ctx->config, LOG_INFO,
 			"%p: Add text (%zu): \"%.*s\"",
-			handle, entry->data.text.len,
-			(int)entry->data.text.len,
-			entry->data.text.data);
+			handle, entry->text.len,
+			(int)entry->text.len,
+			entry->text.data);
 
-	para->content.len += entry->data.text.len;
+	para->content.len += entry->text.len;
 
 	return PARAGRAPH_OK;
 }
@@ -133,8 +133,8 @@ paragraph_err_t paragraph_content_add_replaced(
 	}
 
 	entry->type = PARAGRAPH_CONTENT_REPLACED;
-	entry->data.replaced.px_width = px_width;
-	entry->data.replaced.px_height = px_height;
+	entry->replaced.px_width = px_width;
+	entry->replaced.px_height = px_height;
 	entry->handle = handle;
 	entry->style = style;
 

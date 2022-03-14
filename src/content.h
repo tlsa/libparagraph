@@ -31,7 +31,7 @@ typedef struct paragraph_content_entry_s {
 			uint32_t px_width;
 			uint32_t px_height;
 		} replaced;
-	} data;
+	};
 	void *handle;
 	paragraph_style_t *style;
 } paragraph_content_entry_t;
