@@ -31,6 +31,7 @@ SOURCES_PARAGRAPH = \
 	para.c \
 	util.c \
 	style.c \
+	layout.c \
 	content.c
 
 SRC_PARAGRAPH := $(addprefix src/,$(SOURCES_PARAGRAPH))
