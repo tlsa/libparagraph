@@ -10,6 +10,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include <paragraph.h>
 
@@ -38,6 +39,10 @@ paragraph_err_t paragraph__content_destroy(
 	content->entries = NULL;
 	content->entries_used = 0;
 	content->entries_alloc = 0;
+
+	free(content->text);
+	content->text = NULL;
+	content->len = 0;
 
 	return PARAGRAPH_OK;
 }
@@ -208,5 +213,36 @@ paragraph_err_t paragraph_content_add_inline_end(
 	entry->style = paragraph_style__ref(style);
 
 	paragraph__log(para->ctx->config, LOG_INFO, "%p: Add inline end!", handle);
+	return PARAGRAPH_OK;
+}
+
+paragraph_err_t paragraph_content__get_text(
+		paragraph_para_t *para,
+		const char **text_out,
+		size_t *len_out)
+{
+	paragraph_content_t *content = &para->content;
+	char *text;
+
+	/** TODO: Cache? */
+	/** TODO: Partial changes? */
+
+	text = realloc(content->text, content->len);
+	if (text == NULL) {
+		return PARAGRAPH_ERR_OOM;
+	}
+
+	content->text = text;
+	for (size_t i = 0; i < content->entries_used; i++) {
+		if (content->entries[i].type != PARAGRAPH_CONTENT_TEXT) {
+			continue;
+		}
+		memcpy(text, content->entries[i].text.data,
+				content->entries[i].text.len);
+		text += content->entries[i].text.len;
+	}
+
+	*text_out = content->text;
+	*len_out = content->len;
 	return PARAGRAPH_OK;
 }

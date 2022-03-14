@@ -41,6 +41,7 @@ typedef struct paragraph_content_s {
 	uint32_t entries_alloc;
 	uint32_t entries_used;
 
+	char *text; /**< Complete paragraph text. */
 	size_t len; /**< Total byte-length of text. */
 } paragraph_content_t;
 
@@ -55,5 +56,10 @@ typedef struct paragraph_content_s {
  */
 paragraph_err_t paragraph__content_destroy(
 		paragraph_content_t *content);
+
+paragraph_err_t paragraph_content__get_text(
+		paragraph_para_t *para,
+		const char **text_out,
+		size_t *len_out);
 
 #endif
