@@ -309,6 +309,31 @@ static bool paragraph_sd_add_end(
 	return true;
 }
 
+static bool paragraph_sd_layout(
+		dom_node_type type,
+		dom_node *node)
+{
+	bool res;
+	uint32_t height;
+	paragraph_err_t err;
+	paragraph_para_t *para;
+
+	assert(type == DOM_ELEMENT_NODE);
+
+	res = paragraph_sd_get_para(node, &para);
+	if (res != true) {
+		/* Assume this element isn't inside a <p>. */
+		return true;
+	}
+
+	err = paragraph_layout_line(para, 800, NULL, NULL, &height);
+	if (err != PARAGRAPH_OK) {
+		return false;
+	}
+
+	return true;
+}
+
 static enum dom_walk_cmd paragraph_sd_cb(
 		enum dom_walk_stage stage,
 		dom_node_type type,
@@ -353,7 +378,13 @@ static enum dom_walk_cmd paragraph_sd_cb(
 
 		case DOM_WALK_STAGE_LEAVE:
 			if (dom_string_caseless_isequal(name,
-					paragraph_sd_g.str_p) == false) {
+					paragraph_sd_g.str_p) == true) {
+				res = paragraph_sd_layout(type, node);
+				if (res != true) {
+					dom_string_unref(name);
+					return DOM_WALK_CMD_ABORT;
+				}
+			} else {
 				res = paragraph_sd_add_end(type, node);
 				if (res != true) {
 					dom_string_unref(name);
