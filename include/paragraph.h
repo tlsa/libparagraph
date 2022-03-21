@@ -223,101 +223,73 @@ paragraph_err_t paragraph_create(
 paragraph_para_t *paragraph_destroy(
 		paragraph_para_t *para);
 
-/**
- * Push an inline start to a paragraph.
- *
- * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph is either reset or destroyed.
- *
- * \param[in] ctx     The paragraph to add style to.
- * \param[in] handle  The client handle for the start.  e.g. a DOM node.
- * \param[in] style   The new computed style.
- * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
- */
-paragraph_err_t paragraph_content_add_inline_start(
-		paragraph_para_t *para,
-		void *handle,
-		paragraph_style_t *style);
+/** Insertion point. */
+typedef enum paragraph_content_pos_e {
+	PARAGRAPH_CONTENT_POS_BEFORE, /**< Insert before. */
+	PARAGRAPH_CONTENT_POS_AFTER,  /**< Insert after. */
+} paragraph_content_pos_t;
 
 /**
- * Pop an inline style from a paragraph.
- *
- * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph is either reset or destroyed.
- *
- * \param[in] ctx     The paragraph to add style to.
- * \param[in] handle  The client handle for the start.  e.g. a DOM node.
- * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ * Paragraph content spec.
  */
-paragraph_err_t paragraph_content_add_inline_end(
-		paragraph_para_t *para,
-		void *handle);
+typedef struct paragraph_content_params_s {
+	/** Content type. */
+	enum paragraph_content_type_e {
+		PARAGRAPH_CONTENT_NONE,         /**< Invalid content. */
+		PARAGRAPH_CONTENT_TEXT,         /**< Text content. */
+		PARAGRAPH_CONTENT_FLOAT,        /**< Floating content. */
+		PARAGRAPH_CONTENT_REPLACED,     /**< Replaced content. */
+		PARAGRAPH_CONTENT_INLINE_START, /**< Inline start. */
+		PARAGRAPH_CONTENT_INLINE_END,   /**< Inline end. */
+	} type;
+	/** Content type-specific data. */
+	union {
+		/** Data for type \ref PARAGRAPH_CONTENT_TEXT. */
+		struct {
+			const paragraph_string_t *string;
+		} text;
+
+		/** Data for type \ref PARAGRAPH_CONTENT_FLOAT. */
+		struct {
+			paragraph_style_t *style; /**< Style for content. */
+		} floated;
+
+		/** Data for type \ref PARAGRAPH_CONTENT_REPLACED. */
+		struct {
+			paragraph_style_t *style; /**< Style for content. */
+			uint32_t px_width;  /**< Width in pixels. */
+			uint32_t px_height; /**< Height in pixels. */
+		} replaced;
+
+		/** Data for type \ref PARAGRAPH_CONTENT_INLINE_START. */
+		struct {
+			paragraph_style_t *style; /**< Style for content. */
+		} inline_start;
+	};
+	/** Client handle for content, e.g. corresponding DOM node. */
+	void *pw;
+} paragraph_content_params_t;
+
+typedef uint32_t paragraph_content_id_t;
 
 /**
- * Add text to a paragraph.
- *
- * Note that `handle` must remain valid and unmodified until
- * the paragraph is either reset or destroyed.
- *
- * The scale is not passed in here.  The client must know the scale to measure
- * text with by storing it in its `pw`.
- *
- * \param[in] ctx     The paragraph to add text to.
- * \param[in] text    The text to add to the paragraph.
- * \param[in] handle  The client handle for the text.  e.g. a layout node.
- * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ * Paragraph content spec.
  */
-paragraph_err_t paragraph_content_add_text(
-		paragraph_para_t *para,
-		const paragraph_string_t *text,
-		void *handle);
+typedef struct paragraph_content_position_s {
+	/** Content entry to position relative to. */
+	paragraph_content_id_t rel;
+	/** Whether to position new content before or after \ref rel. */
+	paragraph_content_pos_t pos;
+} paragraph_content_position_t;
 
 /**
- * Add replaced object to a paragraph.
- *
- * This is an object that has pre-determined dimensions, for example:
- *
- * * an image
- * * a form control
- * * an inline-block
- *
- * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph is either reset or destroyed.
- *
- * Note that the width and height are passed **pre-scaled**.
- *
- * \param[in] ctx     The paragraph to add replaced object to.
- * \param[in] width   The width of the replaced content.
- * \param[in] height  The height of the replaced content.
- * \param[in] handle  The client handle for replaced element.  e.g. layout node.
- * \param[in] style   The computed style that applies to the text.
- * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ * Create a content entry in a paragraph.
  */
-paragraph_err_t paragraph_content_add_replaced(
+paragraph_err_t paragraph_content_add(
 		paragraph_para_t *para,
-		uint32_t px_width,
-		uint32_t px_height,
-		void *handle,
-		paragraph_style_t *style);
-
-/**
- * Add floated object to a paragraph.
- *
- * This is an object that has the `float` property set to either `left` or
- * `right`.
- *
- * Note that both `handle` and `style` must remain valid and unmodified until
- * the paragraph is either reset or destroyed.
- *
- * \param[in] ctx     The paragraph to add replaced object to.
- * \param[in] handle  The client handle for the text.  e.g. a layout node.
- * \param[in] style   The computed style that applies to the text.
- * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
- */
-paragraph_err_t paragraph_content_add_float(
-		paragraph_para_t *para,
-		void *handle,
-		paragraph_style_t *style);
+		const paragraph_content_params_t *params,
+		const paragraph_content_position_t *pos,
+		paragraph_content_id_t *new);
 
 /**
  * Get the minimum and maximum widths of the paragraph.
