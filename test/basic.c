@@ -221,6 +221,7 @@ static bool paragraph_sd_add_text(
 	dom_string *content;
 	paragraph_err_t err;
 	paragraph_para_t *para;
+	paragraph_content_id_t content_id;
 
 	assert(type == DOM_TEXT_NODE);
 
@@ -239,7 +240,14 @@ static bool paragraph_sd_add_text(
 	/* TODO: pass ref in, and allow libparagraph to unref */
 	dom_string_unref(content);
 
-	err = paragraph_content_add_text(para, content, node);
+	err = paragraph_content_add(para,
+			&(paragraph_content_params_t) {
+				.type = PARAGRAPH_CONTENT_TEXT,
+				.text = {
+					.string = content,
+				},
+				.pw = node,
+			}, NULL, &content_id);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to add text: %s\n",
 				__func__, paragraph_strerror(err));
@@ -257,6 +265,7 @@ static bool paragraph_sd_add_start(
 	paragraph_err_t err;
 	paragraph_para_t *para;
 	css_select_results *style;
+	paragraph_content_id_t content_id;
 
 	assert(type == DOM_ELEMENT_NODE);
 
@@ -273,7 +282,14 @@ static bool paragraph_sd_add_start(
 		return true;
 	}
 
-	err = paragraph_content_add_inline_start(para, node, style);
+	err = paragraph_content_add(para,
+			&(paragraph_content_params_t) {
+				.type = PARAGRAPH_CONTENT_INLINE_START,
+				.inline_start = {
+					.style = style,
+				},
+				.pw = node,
+			}, NULL, &content_id);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to add text: %s\n",
 				__func__, paragraph_strerror(err));
@@ -290,6 +306,7 @@ static bool paragraph_sd_add_end(
 	bool res;
 	paragraph_err_t err;
 	paragraph_para_t *para;
+	paragraph_content_id_t content_id;
 
 	assert(type == DOM_ELEMENT_NODE);
 
@@ -299,7 +316,11 @@ static bool paragraph_sd_add_end(
 		return true;
 	}
 
-	err = paragraph_content_add_inline_end(para, node);
+	err = paragraph_content_add(para,
+			&(paragraph_content_params_t) {
+				.type = PARAGRAPH_CONTENT_INLINE_END,
+				.pw = node,
+			}, NULL, &content_id);
 	if (err != PARAGRAPH_OK) {
 		fprintf(stderr, "%s: Failed to add text: %s\n",
 				__func__, paragraph_strerror(err));
