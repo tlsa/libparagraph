@@ -22,6 +22,7 @@ const char *paragraph_strerror(paragraph_err_t err)
 		[PARAGRAPH_OK]            = "Success",
 		[PARAGRAPH_END_OF_LINE]   = "Success: End of line",
 		[PARAGRAPH_ERR_OOM]       = "Out of memory",
+		[PARAGRAPH_ERR_BAD_TYPE]  = "Bad content type",
 		[PARAGRAPH_ERR_BAD_PARAM] = "Bad parameter",
 	};
 
