@@ -62,4 +62,26 @@ paragraph_err_t paragraph_content__get_text(
 		const char **text_out,
 		size_t *len_out);
 
+static inline const char *paragraph__content_typestr(
+		enum paragraph_content_type_e type)
+{
+	static const char * const str[] = {
+		[PARAGRAPH_CONTENT_TEXT]         = "TEXT",
+		[PARAGRAPH_CONTENT_FLOAT]        = "FLOAT",
+		[PARAGRAPH_CONTENT_REPLACED]     = "REPLACED",
+		[PARAGRAPH_CONTENT_INLINE_START] = "INLINE START",
+		[PARAGRAPH_CONTENT_INLINE_END]   = "INLINE END",
+	};
+
+	if (type >= PARAGRAPH_ARRAY_LEN(str)) {
+		return "Invalid";
+	}
+
+	if (str[type] == NULL) {
+		return "Invalid";
+	}
+
+	return str[type];
+}
+
 #endif
