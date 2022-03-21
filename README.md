@@ -23,17 +23,10 @@ TODO
 * Add way to modify a content style.
   - Again; it will help for the client to have a handle for the paragraph
     content entry, so it can say what it's changing the style of.
-* Add way to insert after/before some existing content entry. At the moment
-  it only supports append to end of paragraph.
 
 #### Actions
 
-* Change content add functions to return a content entry pointer for the
-  new content entry.
-* Change API to take an existing entry to insert before/after.
-  - If NULL, insert at end.
-  - Add enum to specify before/after.
-  - Consolidate content add functions into one with parameters struct?
+* Add remove content API.
 
 ### Ownership
 
