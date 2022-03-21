@@ -56,8 +56,10 @@ paragraph_err_t paragraph__content_destroy(
  */
 static paragraph_err_t paragraph__content_entry_get_new(
 		paragraph_para_t *para,
+		const paragraph_content_position_t *pos,
 		paragraph_content_entry_t **entry_out)
 {
+	uint32_t entry_index;
 	uint32_t entries_alloc;
 	paragraph_content_t *content;
 	paragraph_content_entry_t *entries;
@@ -81,138 +83,111 @@ static paragraph_err_t paragraph__content_entry_get_new(
 		content->entries_alloc = entries_alloc;
 	}
 
-	*entry_out = content->entries + content->entries_used++;
+	if (pos != NULL) {
+		entry_index = pos->rel;
+
+		if (pos->pos == PARAGRAPH_CONTENT_POS_AFTER) {
+			entry_index++;
+		}
+
+		if (entry_index > content->entries_used) {
+			entry_index = content->entries_used;
+		} else {
+			if (entry_index != content->entries_used) {
+				const size_t used = content->entries_used;
+				const size_t entry_size = sizeof(*entries);
+				const size_t remaining = used - entry_index;
+				const size_t before = entry_size * entry_index;
+
+				memmove(content->entries + before + entry_size,
+					content->entries + before,
+					remaining * entry_size);
+			}
+		}
+	} else {
+		entry_index = content->entries_used;
+	}
+
+	content->entries_used++;
+
+	*entry_out = content->entries + entry_index;
 	(*entry_out)->type = PARAGRAPH_CONTENT_NONE;
 
 	return PARAGRAPH_OK;
 }
 
-/* Exported function, documented in `include/paragraph.h` */
-paragraph_err_t paragraph_content_add_text(
+/**
+ * Create a content entry in a paragraph.
+ */
+paragraph_err_t paragraph_content_add(
 		paragraph_para_t *para,
-		const paragraph_string_t *text,
-		void *handle)
+		const paragraph_content_params_t *params,
+		const paragraph_content_position_t *pos,
+		paragraph_content_id_t *new)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
+	enum paragraph_content_type_e type = params->type;
 
-	err = paragraph__content_entry_get_new(para, &entry);
+	err = paragraph__content_entry_get_new(para, pos, &entry);
 	if (err != PARAGRAPH_OK) {
 		return err;
 	}
 
-	entry->type = PARAGRAPH_CONTENT_TEXT;
-	entry->text.string = text;
-	entry->handle = handle;
-	entry->style = paragraph_style__get_current(&para->styles);
+	entry->pw = params->pw;
+	entry->type = type;
 
-	para->ctx->cb_text->text_get(para->ctx->pw, text,
-			&entry->text.data,
-			&entry->text.len);
+	paragraph__log(para->ctx->config, LOG_INFO,"%p: Add '%s'",
+			params->pw, paragraph__content_typestr(type));
 
-	paragraph__log(para->ctx->config, LOG_INFO,
-			"%p: Add text (%zu): \"%.*s\"",
-			handle, entry->text.len,
-			(int)entry->text.len,
-			entry->text.data);
+	switch (type) {
+		case PARAGRAPH_CONTENT_TEXT:
+			entry->text.string = params->text.string;
+			para->ctx->cb_text->text_get(
+					para->ctx->pw,
+					params->text.string,
+					&entry->text.data,
+					&entry->text.len);
 
-	para->content.len += entry->text.len;
+			para->content.len += entry->text.len;
+			entry->style = paragraph_style__get_current(
+					&para->styles);
 
-	return PARAGRAPH_OK;
-}
+			paragraph__log(para->ctx->config, LOG_INFO,
+					"        content (%zu): \"%.*s\"",
+					entry->text.len,
+					(int)entry->text.len,
+					entry->text.data);
+			break;
 
-/* Exported function, documented in `include/paragraph.h` */
-paragraph_err_t paragraph_content_add_replaced(
-		paragraph_para_t *para,
-		uint32_t px_width,
-		uint32_t px_height,
-		void *handle,
-		paragraph_style_t *style)
-{
-	paragraph_err_t err;
-	paragraph_content_entry_t *entry;
+		case PARAGRAPH_CONTENT_FLOAT:
+			entry->style = paragraph_style__ref(
+					params->floated.style);
+			break;
 
-	err = paragraph__content_entry_get_new(para, &entry);
-	if (err != PARAGRAPH_OK) {
-		return err;
+		case PARAGRAPH_CONTENT_REPLACED:
+			entry->replaced.px_width = params->replaced.px_width;
+			entry->replaced.px_height = params->replaced.px_height;
+
+			entry->style = paragraph_style__ref(
+					params->replaced.style);
+			break;
+
+		case PARAGRAPH_CONTENT_INLINE_START:
+			entry->style = paragraph_style__ref(
+					params->inline_start.style);
+			break;
+
+		case PARAGRAPH_CONTENT_INLINE_END:
+			entry->style = paragraph_style__get_current(
+					&para->styles);
+			break;
+
+		default:
+			return PARAGRAPH_ERR_BAD_TYPE;
 	}
 
-	entry->type = PARAGRAPH_CONTENT_REPLACED;
-	entry->replaced.px_width = px_width;
-	entry->replaced.px_height = px_height;
-	entry->handle = handle;
-	entry->style = style;
-
-	return PARAGRAPH_OK;
-}
-
-/* Exported function, documented in `include/paragraph.h` */
-paragraph_err_t paragraph_content_add_float(
-		paragraph_para_t *para,
-		void *handle,
-		paragraph_style_t *style)
-{
-	paragraph_err_t err;
-	paragraph_content_entry_t *entry;
-
-	err = paragraph__content_entry_get_new(para, &entry);
-	if (err != PARAGRAPH_OK) {
-		return err;
-	}
-
-	entry->type = PARAGRAPH_CONTENT_FLOAT;
-	entry->handle = handle;
-	entry->style = style;
-
-	return PARAGRAPH_OK;
-}
-
-/* Exported function, documented in `include/paragraph.h` */
-paragraph_err_t paragraph_content_add_inline_start(
-		paragraph_para_t *para,
-		void *handle,
-		paragraph_style_t *style)
-{
-	paragraph_err_t err;
-	paragraph_content_entry_t *entry;
-
-	err = paragraph__content_entry_get_new(para, &entry);
-	if (err != PARAGRAPH_OK) {
-		return err;
-	}
-
-	entry->type = PARAGRAPH_CONTENT_INLINE_START;
-	entry->handle = handle;
-	entry->style = paragraph_style__ref(style);
-
-	paragraph__log(para->ctx->config, LOG_INFO, "%p: Add inline start!", handle);
-	return paragraph_style__push(&para->styles, style);
-}
-
-/* Exported function, documented in `include/paragraph.h` */
-paragraph_err_t paragraph_content_add_inline_end(
-		paragraph_para_t *para,
-		void *handle)
-{
-	paragraph_err_t err;
-	paragraph_style_t *style;
-	paragraph_content_entry_t *entry;
-
-	err = paragraph__content_entry_get_new(para, &entry);
-	if (err != PARAGRAPH_OK) {
-		return err;
-	}
-
-	err = paragraph_style__pop(&para->styles, &style);
-	if (err != PARAGRAPH_OK) {
-		return err;
-	}
-
-	entry->type = PARAGRAPH_CONTENT_INLINE_END;
-	entry->handle = handle;
-	entry->style = paragraph_style__ref(style);
-
-	paragraph__log(para->ctx->config, LOG_INFO, "%p: Add inline end!", handle);
+	*new = entry - para->content.entries;
 	return PARAGRAPH_OK;
 }
 

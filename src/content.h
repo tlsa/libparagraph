@@ -12,27 +12,33 @@
 #ifndef PARAGRAPH__CONTENT_H
 #define PARAGRAPH__CONTENT_H
 
+#include "util.h"
+
+/**
+ * Paragraph content spec.
+ */
 typedef struct paragraph_content_entry_s {
-	enum {
-		PARAGRAPH_CONTENT_NONE,
-		PARAGRAPH_CONTENT_TEXT,
-		PARAGRAPH_CONTENT_FLOAT,
-		PARAGRAPH_CONTENT_REPLACED,
-		PARAGRAPH_CONTENT_INLINE_START,
-		PARAGRAPH_CONTENT_INLINE_END,
-	} type;
+	/** Content type. */
+	enum paragraph_content_type_e type;
+	/** Content type-specific data. */
 	union {
+		/** Data for type \ref PARAGRAPH_CONTENT_TEXT. */
 		struct {
 			const paragraph_string_t *string;
 			const char *data;
 			size_t len;
 		} text;
+		/** Data for type \ref PARAGRAPH_CONTENT_REPLACED. */
 		struct {
 			uint32_t px_width;
 			uint32_t px_height;
 		} replaced;
 	};
-	void *handle;
+	/** Client handle for content, e.g. corresponding DOM node. */
+	void *pw;
+	/**
+	 * Style for content.
+	 */
 	paragraph_style_t *style;
 } paragraph_content_entry_t;
 
