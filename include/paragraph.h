@@ -277,19 +277,24 @@ typedef uint32_t paragraph_content_id_t;
  */
 typedef struct paragraph_content_position_s {
 	/** Content entry to position relative to. */
-	paragraph_content_id_t rel;
+	paragraph_content_id_t *rel;
 	/** Whether to position new content before or after \ref rel. */
 	paragraph_content_pos_t pos;
 } paragraph_content_position_t;
 
 /**
  * Create a content entry in a paragraph.
+ *
+ * \param[in]  para    The paragraph object to add content to.
+ * \param[in]  params  The content to add.
+ * \param[in]  pos     The position to add content, or NULL for end.
+ * \param[out] new     Returns pointer to new content identifier on success.
  */
 paragraph_err_t paragraph_content_add(
 		paragraph_para_t *para,
 		const paragraph_content_params_t *params,
 		const paragraph_content_position_t *pos,
-		paragraph_content_id_t *new);
+		paragraph_content_id_t **new);
 
 /**
  * Get the minimum and maximum widths of the paragraph.
