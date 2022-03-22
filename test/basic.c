@@ -221,7 +221,7 @@ static bool paragraph_sd_add_text(
 	dom_string *content;
 	paragraph_err_t err;
 	paragraph_para_t *para;
-	paragraph_content_id_t content_id;
+	paragraph_content_id_t *content_id;
 
 	assert(type == DOM_TEXT_NODE);
 
@@ -265,7 +265,7 @@ static bool paragraph_sd_add_start(
 	paragraph_err_t err;
 	paragraph_para_t *para;
 	css_select_results *style;
-	paragraph_content_id_t content_id;
+	paragraph_content_id_t *content_id;
 
 	assert(type == DOM_ELEMENT_NODE);
 
@@ -306,7 +306,7 @@ static bool paragraph_sd_add_end(
 	bool res;
 	paragraph_err_t err;
 	paragraph_para_t *para;
-	paragraph_content_id_t content_id;
+	paragraph_content_id_t *content_id;
 
 	assert(type == DOM_ELEMENT_NODE);
 
