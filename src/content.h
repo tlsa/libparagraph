@@ -36,9 +36,7 @@ typedef struct paragraph_content_entry_s {
 	};
 	/** Client handle for content, e.g. corresponding DOM node. */
 	void *pw;
-	/**
-	 * Style for content.
-	 */
+	/** Style for content. */
 	paragraph_style_t *style;
 } paragraph_content_entry_t;
 
