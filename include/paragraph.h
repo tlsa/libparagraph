@@ -297,6 +297,17 @@ paragraph_err_t paragraph_content_add(
 		paragraph_content_id_t **new);
 
 /**
+ * Create a content entry in a paragraph.
+ *
+ * \param[in]  para  The paragraph object to remove content from.
+ * \param[in]  id    An identifier for the content to remove from the paragraph.
+ * \return \ref PARAGRAPH_OK on success, or appropriate error otherwise.
+ */
+paragraph_err_t paragraph_content_remove(
+		paragraph_para_t *para,
+		paragraph_content_id_t *id);
+
+/**
  * Get the minimum and maximum widths of the paragraph.
  *
  * \param[in]  ctx     The paragraph to get min / max widths from.

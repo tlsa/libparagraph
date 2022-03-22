@@ -216,3 +216,31 @@ paragraph_err_t paragraph_content__get_text(
 	*len_out = content->len;
 	return PARAGRAPH_OK;
 }
+
+/* Exported function, documented in `include/paragraph.h`. */
+paragraph_err_t paragraph_content_remove(
+		paragraph_para_t *para,
+		paragraph_content_id_t *id)
+{
+	paragraph_content_entry_t *entry = (void *) id;
+
+	if (para->content.first == entry) {
+		para->content.first = entry->next;
+	}
+	if (para->content.last == entry) {
+		para->content.last = entry->prev;
+	}
+
+	if (entry->prev != NULL) {
+		entry->prev->next = entry->next;
+	}
+	if (entry->next != NULL) {
+		entry->next->prev = entry->prev;
+	}
+
+	para->content.count--;
+
+	paragraph__content_entry_cleanup(entry);
+
+	return PARAGRAPH_OK;
+}
