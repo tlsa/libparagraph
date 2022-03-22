@@ -38,12 +38,15 @@ typedef struct paragraph_content_entry_s {
 	void *pw;
 	/** Style for content. */
 	paragraph_style_t *style;
+
+	struct paragraph_content_entry_s *prev;
+	struct paragraph_content_entry_s *next;
 } paragraph_content_entry_t;
 
 typedef struct paragraph_content_s {
-	paragraph_content_entry_t *entries;
-	uint32_t entries_alloc;
-	uint32_t entries_used;
+	paragraph_content_entry_t *first;
+	paragraph_content_entry_t *last;
+	uint32_t count;
 
 	char *text; /**< Complete paragraph text. */
 	size_t len; /**< Total byte-length of text. */

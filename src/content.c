@@ -30,15 +30,17 @@ static void paragraph__content_entry_cleanup(
 paragraph_err_t paragraph__content_destroy(
 		paragraph_content_t *content)
 {
-	/* TODO: Free anything we own in each entry. */
-	for (size_t i = 0; i < content->entries_used; i++) {
-		paragraph__content_entry_cleanup(&content->entries[i]);
+	while (content->first != NULL) {
+		paragraph_content_entry_t *content_entry = content->first;
+
+		paragraph__content_entry_cleanup(content_entry);
+
+		content->first = content_entry->next;
+		free(content_entry);
 	}
 
-	free(content->entries);
-	content->entries = NULL;
-	content->entries_used = 0;
-	content->entries_alloc = 0;
+	content->count = 0;
+	content->last = NULL;
 
 	free(content->text);
 	content->text = NULL;
@@ -59,63 +61,53 @@ static paragraph_err_t paragraph__content_entry_get_new(
 		const paragraph_content_position_t *pos,
 		paragraph_content_entry_t **entry_out)
 {
-	uint32_t entry_index;
-	uint32_t entries_alloc;
 	paragraph_content_t *content;
+	paragraph_content_entry_t *entry;
 
 	content = &para->content;
 
-	if (content->entries_alloc <= content->entries_used) {
-		paragraph_content_entry_t *entries;
-
-		if (content->entries_alloc == 0) {
-			entries_alloc = 8;
-		} else {
-			entries_alloc = content->entries_alloc * 2;
-		}
-
-		entries = realloc(content->entries,
-				entries_alloc * sizeof(*entries));
-		if (entries == NULL) {
-			return PARAGRAPH_ERR_OOM;
-		}
-
-		content->entries = entries;
-		content->entries_alloc = entries_alloc;
+	entry = calloc(1, sizeof(*entry));
+	if (entry == NULL) {
+		return PARAGRAPH_ERR_OOM;
 	}
 
-	if (pos != NULL && pos->rel != NULL) {
-		entry_index = (paragraph_content_entry_t *) pos->rel -
-				content->entries;
+	if (content->count == 0) {
+		assert(content->first == NULL);
+		assert(content->last == NULL);
 
-		if (pos->pos == PARAGRAPH_CONTENT_POS_AFTER) {
-			entry_index++;
-		}
-
-		if (entry_index > content->entries_used) {
-			entry_index = content->entries_used;
-		} else {
-			if (entry_index != content->entries_used) {
-				paragraph_content_entry_t *entries;
-				const size_t used = content->entries_used;
-				const size_t entry_size = sizeof(*entries);
-				const size_t remaining = used - entry_index;
-				const size_t before = entry_size * entry_index;
-
-				memmove(content->entries + before + entry_size,
-					content->entries + before,
-					remaining * entry_size);
-			}
-		}
+		content->first = entry;
+		content->last = entry;
 	} else {
-		entry_index = content->entries_used;
+		paragraph_content_entry_t *rel = content->last;
+		paragraph_content_pos_t place = PARAGRAPH_CONTENT_POS_AFTER;
+
+		if (pos != NULL && pos->rel != NULL) {
+			rel = (paragraph_content_entry_t *) pos->rel;
+			place = pos->pos;
+		}
+
+		if (place == PARAGRAPH_CONTENT_POS_BEFORE) {
+			if (content->first == rel) {
+				content->first = entry;
+			}
+
+			entry->prev = rel->prev;
+			entry->next = rel;
+			rel->prev = entry;
+		} else {
+			if (content->last == rel) {
+				content->last = entry;
+			}
+
+			entry->prev = rel;
+			entry->next = rel->next;
+			rel->next = entry;
+		}
 	}
 
-	content->entries_used++;
+	content->count++;
 
-	*entry_out = content->entries + entry_index;
-	(*entry_out)->type = PARAGRAPH_CONTENT_NONE;
-
+	*entry_out = entry;
 	return PARAGRAPH_OK;
 }
 
@@ -211,13 +203,13 @@ paragraph_err_t paragraph_content__get_text(
 	}
 
 	content->text = text;
-	for (size_t i = 0; i < content->entries_used; i++) {
-		if (content->entries[i].type != PARAGRAPH_CONTENT_TEXT) {
+	for (paragraph_content_entry_t *e = content->first;
+			e != NULL; e = e->next) {
+		if (e->type != PARAGRAPH_CONTENT_TEXT) {
 			continue;
 		}
-		memcpy(text, content->entries[i].text.data,
-				content->entries[i].text.len);
-		text += content->entries[i].text.len;
+		memcpy(text, e->text.data, e->text.len);
+		text += e->text.len;
 	}
 
 	*text_out = content->text;
