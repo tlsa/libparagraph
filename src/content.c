@@ -62,11 +62,12 @@ static paragraph_err_t paragraph__content_entry_get_new(
 	uint32_t entry_index;
 	uint32_t entries_alloc;
 	paragraph_content_t *content;
-	paragraph_content_entry_t *entries;
 
 	content = &para->content;
 
 	if (content->entries_alloc <= content->entries_used) {
+		paragraph_content_entry_t *entries;
+
 		if (content->entries_alloc == 0) {
 			entries_alloc = 8;
 		} else {
@@ -83,8 +84,9 @@ static paragraph_err_t paragraph__content_entry_get_new(
 		content->entries_alloc = entries_alloc;
 	}
 
-	if (pos != NULL) {
-		entry_index = pos->rel;
+	if (pos != NULL && pos->rel != NULL) {
+		entry_index = (paragraph_content_entry_t *) pos->rel -
+				content->entries;
 
 		if (pos->pos == PARAGRAPH_CONTENT_POS_AFTER) {
 			entry_index++;
@@ -94,6 +96,7 @@ static paragraph_err_t paragraph__content_entry_get_new(
 			entry_index = content->entries_used;
 		} else {
 			if (entry_index != content->entries_used) {
+				paragraph_content_entry_t *entries;
 				const size_t used = content->entries_used;
 				const size_t entry_size = sizeof(*entries);
 				const size_t remaining = used - entry_index;
@@ -123,7 +126,7 @@ paragraph_err_t paragraph_content_add(
 		paragraph_para_t *para,
 		const paragraph_content_params_t *params,
 		const paragraph_content_position_t *pos,
-		paragraph_content_id_t *new)
+		paragraph_content_id_t **new)
 {
 	paragraph_err_t err;
 	paragraph_content_entry_t *entry;
@@ -187,7 +190,7 @@ paragraph_err_t paragraph_content_add(
 			return PARAGRAPH_ERR_BAD_TYPE;
 	}
 
-	*new = entry - para->content.entries;
+	*new = (void *)entry;
 	return PARAGRAPH_OK;
 }
 
